@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tracer.Domain.Entities;
+using Tracer.Domain.Enums;
 
 namespace Tracer.Domain.Contracts
 {
@@ -19,7 +20,10 @@ namespace Tracer.Domain.Contracts
         Task<ICollection<Cable>> GetCables();
         Task<ICollection<Connectioncategory>> ConnectionCategories();
         Task<ICollection<Devicestype>> GetDeviceTypes();
-        Task<bool> SaveConnections(string data);
-        Task<string> GetSaveData();
+        Task<ResponseAction> InsertSaveConnection(Connectiondatum model);
+        Task<ResponseAction> UpdateSaveConnection(int Id, string title, string SavedData);
+        Task<Connectiondatum?> GetSaveData(int id);
+        Task<ResponseAction> RemoveSaveData(int id);
+        Task SaveChangesAsync();
     }
 }

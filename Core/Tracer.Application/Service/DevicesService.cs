@@ -7,6 +7,7 @@ using Tracer.Application.Dto.Ports;
 using Tracer.Application.Service.Contracts;
 using Tracer.Domain.Contracts;
 using Tracer.Domain.Entities;
+using Tracer.Domain.Enums;
 
 namespace Tracer.Application.Service;
 
@@ -132,13 +133,32 @@ public class DevicesService(IDeviceRepository repository) : IDevicesService
         }
     }
 
-    public Task<bool> SaveConnections(string data)
+    public async Task<GetSavedDto?> GetSaveData(int id)
     {
-        return repository.SaveConnections(data);
+        var result =await  repository.GetSaveData(id);
+        if (result == null) return null;
+
+        return new GetSavedDto() {Id = result.Id , SavedData = result.Savedata , Title = result.Title };
     }
 
-    public Task<string> GetSaveData()
+    public Task<ResponseAction> InsertSaveConnection(string title, string SavedData)
     {
-        return repository.GetSaveData();
+        var model = new Connectiondatum()
+        {
+            Title = title,
+            Savedata = SavedData,
+            Createddate = DateTime.Now
+        };
+        return repository.InsertSaveConnection(model);
+    }
+
+    public async Task<ResponseAction> UpdateSaveConnection(int Id, string title, string SavedData)
+    {
+        return await repository.UpdateSaveConnection(Id, title, SavedData);
+    }
+
+    public async Task<ResponseAction> RemoveSaveData(int id)
+    {
+        return await repository.RemoveSaveData(id);
     }
 }

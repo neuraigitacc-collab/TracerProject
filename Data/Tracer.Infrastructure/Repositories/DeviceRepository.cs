@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Tracer.Domain.Contracts;
 using Tracer.Domain.Entities;
+using Tracer.Domain.Enums;
 using Tracer.Infrastructure.Context;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -84,16 +85,28 @@ namespace Tracer.Infrastructure.Repositories
 
         }
 
-        public async Task<bool> SaveConnections(string data)
+        public async Task<ResponseAction> InsertSaveConnection(Connectiondatum model)
         {
             try
             {
-                 context.Connectiondata.Add(new Connectiondatum() 
-                 {
-                     Savedata = data
-                 });
+                 context.Connectiondata.Add(model);
                 await context.SaveChangesAsync();
-                return true;
+                return ResponseAction.Success;
+            }
+            catch (Exception)
+            {
+                return ResponseAction.Failure;
+                throw;
+            }
+        }
+
+        public async Task<Connectiondatum?> GetSaveData(int id)
+        {
+            try
+            {
+                var data = await context.Connectiondata.SingleOrDefaultAsync(x=>x.Id == id);
+                if (data == null) return null;
+                return data;
             }
             catch (Exception)
             {
@@ -101,18 +114,43 @@ namespace Tracer.Infrastructure.Repositories
             }
         }
 
-        public async Task<string> GetSaveData()
+        public async Task<ResponseAction> RemoveSaveData(int id)
         {
             try
             {
-                var data = await context.Connectiondata.OrderBy(x=>x.Createddate).LastOrDefaultAsync();
-                if (data == null) return "";
-                return data.Savedata;
+                var data = await context.Connectiondata.SingleOrDefaultAsync(x => x.Id == id);
+                if (data == null) return ResponseAction.NotFound;
+
+                context.Remove(data);
+                await SaveChangesAsync();
+
+                return ResponseAction.Success;
             }
             catch (Exception)
             {
+                return ResponseAction.Failure;
                 throw;
             }
+        }
+
+        public async Task<ResponseAction> UpdateSaveConnection(int Id, string title, string SavedData)
+        {
+            var Saved = await context.Connectiondata.SingleOrDefaultAsync(x => x.Id == Id);
+            if (Saved == null) return ResponseAction.NotFound;
+
+            Saved.Updatetime = DateTime.Now;
+            Saved.Title = title;    
+            Saved.Savedata = SavedData;
+
+            context.Update(Saved);
+            await SaveChangesAsync();
+
+            return ResponseAction.Success;
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await context.SaveChangesAsync();
         }
     }
 }

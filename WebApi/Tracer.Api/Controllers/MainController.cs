@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tracer.Application.Dto;
 using Tracer.Application.Service.Contracts;
+using Tracer.Domain.Enums;
 
 
 namespace Tracer.Api.Controllers
@@ -34,24 +35,38 @@ namespace Tracer.Api.Controllers
         //}
 
         [HttpPost("SaveChange")]
-        public async Task<IActionResult> SaveChanges(IFormFile file)
+        public async Task<IActionResult> SaveChanges(SavedItemDto dto)
         {
-            if (file == null || file.Length == 0)
+            if (dto.SaveData == null || dto.SaveData.Length == 0)
                 return BadRequest("فایل صحیح نمیباشد");
 
-            using var reader = new StreamReader(file.OpenReadStream());
+            using var reader = new StreamReader(dto.SaveData.OpenReadStream());
 
             // متن JSON خام و بدون تغییر
             string rawJson = await reader.ReadToEndAsync();
-            var result = await devicesService.SaveConnections(rawJson);
+            var result = new ResponseAction();
+            if(dto.Id!= null && dto.Id != 0)
+            {
+                result = await devicesService.UpdateSaveConnection(dto.Id.Value , dto.Title, rawJson);
+            }
+            else
+            {
+                result = await devicesService.InsertSaveConnection(dto.Title, rawJson);
+            }
+                return Ok(result);
+        }
+
+        [HttpGet("GetSaves")]
+        public async Task<IActionResult> GetSaves(int Id)
+        {
+            var result = await devicesService.GetSaveData(Id);
             return Ok(result);
         }
 
-
-        [HttpGet("GetSaves")]
-        public async Task<IActionResult> GetSaves()
+        [HttpPost("RemoveSave")]
+        public async Task<IActionResult> RemoveSave(int Id)
         {
-            var result = await devicesService.GetSaveData();
+            var result = await devicesService.RemoveSaveData(Id);
             return Ok(result);
         }
 
