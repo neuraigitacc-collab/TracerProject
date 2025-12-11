@@ -20,9 +20,10 @@ namespace Tracer.Domain.Contracts
         Task<ICollection<Cable>> GetCables();
         Task<ICollection<Connectioncategory>> ConnectionCategories();
         Task<ICollection<Devicestype>> GetDeviceTypes();
+        Task<ICollection<Connectiondatum>> GetAllSaved();
         Task<ResponseAction> InsertSaveConnection(Connectiondatum model);
         Task<ResponseAction> UpdateSaveConnection(int Id, string title, string SavedData);
-        Task<Connectiondatum?> GetSaveData(int id);
+        Task<string> GetSaveData();
         Task<ResponseAction> RemoveSaveData(int id);
         Task SaveChangesAsync();
     }

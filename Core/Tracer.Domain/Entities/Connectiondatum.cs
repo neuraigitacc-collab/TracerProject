@@ -10,7 +10,7 @@ public partial class Connectiondatum
     public string Savedata { get; set; } = null!;
     public string Title { get; set; } = null!;
 
-    public bool? Isdelete { get; set; }
+    public bool Isdelete { get; set; }
 
     public DateTime Createddate { get; set; }
 

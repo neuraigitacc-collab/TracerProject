@@ -34,6 +34,13 @@ namespace Tracer.Api.Controllers
         //    return Ok(await devicesService.GetDeviceTypes());
         //}
 
+        [HttpGet("GetAllSaves")]
+        public async Task<IActionResult> GetAllSaves()
+        {
+            var result = await devicesService.GetAllSaved();
+            return Ok(result);
+        }
+
         [HttpPost("SaveChange")]
         public async Task<IActionResult> SaveChanges(SavedItemDto dto)
         {
@@ -56,10 +63,10 @@ namespace Tracer.Api.Controllers
                 return Ok(result);
         }
 
-        [HttpGet("GetSaves")]
-        public async Task<IActionResult> GetSaves(int Id)
+        [HttpGet("GetSave")]
+        public async Task<IActionResult> GetSave()
         {
-            var result = await devicesService.GetSaveData(Id);
+            var result = await devicesService.GetSaveData();
             return Ok(result);
         }
 

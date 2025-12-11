@@ -76,37 +76,34 @@ namespace Tracer.Infrastructure.Repositories
         .ThenInclude(c => c.Visuals).ToListAsync();
         }
 
-        async ValueTask IAsyncDisposable.DisposeAsync()
+        public async Task<ICollection<Connectiondatum>> GetAllSaved()
         {
-            if (context != null)
-            {
-                await context.DisposeAsync();
-            }
-
+            return await context.Connectiondata.Where(x=> !x.Isdelete).OrderByDescending(x=>x.Createddate).ToListAsync();
         }
 
         public async Task<ResponseAction> InsertSaveConnection(Connectiondatum model)
         {
             try
             {
-                 context.Connectiondata.Add(model);
+                context.Connectiondata.Add(model);
                 await context.SaveChangesAsync();
                 return ResponseAction.Success;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine(e);
                 return ResponseAction.Failure;
                 throw;
             }
         }
 
-        public async Task<Connectiondatum?> GetSaveData(int id)
+        public async Task<string> GetSaveData()
         {
             try
             {
-                var data = await context.Connectiondata.SingleOrDefaultAsync(x=>x.Id == id);
-                if (data == null) return null;
-                return data;
+                var data = await context.Connectiondata.OrderBy(x => x.Createddate).LastOrDefaultAsync();
+                if (data == null) return "";
+                return data.Savedata;
             }
             catch (Exception)
             {
@@ -139,13 +136,22 @@ namespace Tracer.Infrastructure.Repositories
             if (Saved == null) return ResponseAction.NotFound;
 
             Saved.Updatetime = DateTime.Now;
-            Saved.Title = title;    
+            Saved.Title = title;
             Saved.Savedata = SavedData;
 
             context.Update(Saved);
             await SaveChangesAsync();
 
             return ResponseAction.Success;
+        }
+
+        async ValueTask IAsyncDisposable.DisposeAsync()
+        {
+            if (context != null)
+            {
+                await context.DisposeAsync();
+            }
+
         }
 
         public async Task SaveChangesAsync()

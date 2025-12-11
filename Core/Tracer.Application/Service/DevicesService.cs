@@ -133,12 +133,12 @@ public class DevicesService(IDeviceRepository repository) : IDevicesService
         }
     }
 
-    public async Task<GetSavedDto?> GetSaveData(int id)
+    public async Task<string> GetSaveData()
     {
-        var result =await  repository.GetSaveData(id);
+        var result =await  repository.GetSaveData();
         if (result == null) return null;
 
-        return new GetSavedDto() {Id = result.Id , SavedData = result.Savedata , Title = result.Title };
+        return result;
     }
 
     public Task<ResponseAction> InsertSaveConnection(string title, string SavedData)
@@ -160,5 +160,11 @@ public class DevicesService(IDeviceRepository repository) : IDevicesService
     public async Task<ResponseAction> RemoveSaveData(int id)
     {
         return await repository.RemoveSaveData(id);
+    }
+
+    public async Task<ICollection<GetSavedDto>> GetAllSaved()
+    {
+        var items = await repository.GetAllSaved();
+        return items.Select(x => new GetSavedDto() {Id = x.Id , SavedData = x.Savedata.ToString() ,Title = x.Title  }).ToList();
     }
 }

@@ -13,9 +13,10 @@ namespace Tracer.Application.Service.Contracts
     {
         Task<ICollection<DeviceListDto>> GetDevices();
         Task<ICollection<CableListDto>> GetCables();
+        Task<ICollection<GetSavedDto>> GetAllSaved();
         Task<ResponseAction> InsertSaveConnection(string title , string SavedData);
         Task<ResponseAction> UpdateSaveConnection(int Id ,string title , string SavedData);
-        Task<GetSavedDto?> GetSaveData(int id);
+        Task<string> GetSaveData();
         Task<ResponseAction> RemoveSaveData(int id);
         //Task<ICollection<DeviceDto>> GetDeviceTypes();
     }

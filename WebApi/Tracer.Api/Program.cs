@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Tracer.Application.Service;
 using Tracer.Application.Service.Contracts;
 using Tracer.Infrastructure;
@@ -12,7 +13,7 @@ builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddSignalR();
-
+builder.Logging.AddFile();
 builder.Services.AddScoped<IValidationService, ValidationService>();
 builder.Services.AddScoped<IDevicesService, DevicesService>();
 
@@ -32,7 +33,11 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseCors("AllowAll");
-
+app.MapGet("/", (ILogger<Program> logger) =>
+{
+    logger.LogInformation("Test log message");
+    return "Logged!";
+});
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
